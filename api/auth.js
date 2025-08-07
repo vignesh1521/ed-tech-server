@@ -1,3 +1,4 @@
+const { AuthenticationError } = require('apollo-server-express');
 const jwt = require('jsonwebtoken');
 
 const secret = 'ABC123';
@@ -13,4 +14,15 @@ function getUserFromToken(token) {
   }
 }
 
-module.exports = { secret, getUserFromToken };
+
+const requireAuth = (resolver) => {
+  return (parent, args, context, info) => {
+    if (!context.user) {
+      throw new AuthenticationError('Authentication required');
+    }
+    return resolver(parent, args, context, info);
+  };
+};
+
+
+module.exports = { secret, getUserFromToken,requireAuth };

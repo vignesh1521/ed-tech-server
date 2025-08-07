@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 const { users, CourseEnrolled } = require('./users');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { secret } = require('./auth');
+const { secret ,requireAuth } = require('./auth');
 
 const courses = [
     {
@@ -93,25 +93,25 @@ const resolvers = {
     Query: {
         me: (_, __, { user }) => user || null,
 
-        getUsers: (_, __, { user }) => {
+        getUsers:requireAuth( (_, __, { user }) => {
             if (user?.role !== 'admin') {
                 throw new Error('Access denied');
             }
 
             return users.map(u => ({ id: u.id, email: u.email, username: u.username, role: u.role }));
-        },
+        }),
 
-        getCourses: () => courses,
+        getCourses:requireAuth( () => courses),
 
-        getUserEnrolledCourses: (_, { id }, { user }) => {
+        getUserEnrolledCourses:requireAuth( (_, { id }, { user }) => {
 
             if (user.id != id) throw new Error('Access denied');
             return CourseEnrolled.filter(enrollment => enrollment.user.id == id);
 
-        },
-        getCourseById: (_, { id }) => {
+        }),
+        getCourseById:requireAuth( (_, { id }) => {
             return courses.find(course => course.id == id)
-        }
+        })
     },
 
     Mutation: {
@@ -126,7 +126,7 @@ const resolvers = {
         },
 
 
-        enrollUserInCourse: (_, { courseId }, { user, CourseEnrolled }) => {
+        enrollUserInCourse: requireAuth( (_, { courseId }, { user, CourseEnrolled }) => {
             if (!user) {
                 throw new Error("Authentication required");
             }
@@ -136,7 +136,6 @@ const resolvers = {
                 throw new Error("Course not found");
             }
 
-            // Prevent duplicate enrollment
             const alreadyEnrolled = CourseEnrolled.find(e => e.user.id == user.id && e.course.id == courseId);
             if (alreadyEnrolled) {
                 throw new Error("User already enrolled in this course");
@@ -149,7 +148,7 @@ const resolvers = {
             };
             CourseEnrolled.push(enrollment);
             return enrollment;
-        }
+        })
 
     }
 };
