@@ -1,4 +1,4 @@
-const { ApolloServer ,AuthenticationError } = require('apollo-server-express');
+const { ApolloServer, AuthenticationError } = require('apollo-server-express');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { typeDefs, resolvers } = require('./schema');
@@ -6,6 +6,9 @@ const { users, CourseEnrolled } = require('./users');
 const { secret } = require('./auth');
 
 const app = express();
+
+let serverReady = false;
+let cachedHandler;
 
 app.use((req, res, next) => {
   res.setHeader("X-Powered-By", "Node.js");
@@ -32,7 +35,7 @@ const server = new ApolloServer({
         throw new AuthenticationError('Invalid or expired token');
       }
     }
-    
+
 
     return {
       user: currentUser,
