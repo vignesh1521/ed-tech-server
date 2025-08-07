@@ -1,11 +1,11 @@
 const { ApolloServer, AuthenticationError } = require('apollo-server-express');
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { typeDefs, resolvers } = require('../schema'); // Adjust path as needed
-const { users, CourseEnrolled } = require('../users');
-const { secret } = require('../auth');
+const { typeDefs, resolvers } = require('./schema'); 
+const { users, CourseEnrolled } = require('./users');
+const { secret } = require('./auth');
 
-// Global variables (cached between invocations in Vercel if warm)
+
 let server;
 let app;
 let apolloServerHandler;
