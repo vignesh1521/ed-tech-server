@@ -1,4 +1,16 @@
 
+
+---
+
+⚠️ IMPORTANT – SERVER NOTICE
+
+This project now uses Next.js with a built-in GraphQL server.
+The old standalone server you may have hosted previously is no longer needed and should be ignored.
+
+Please use this frontend app only, as it already contains the backend functionality via Apollo Server (GraphQL) inside the pages/api directory.
+
+---
+
 ---
 
 ## 🚀 Ed-Tech GraphQL Server
